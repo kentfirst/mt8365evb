@@ -78,17 +78,19 @@ static void usb_extcon_detect_cable(struct work_struct *work)
 		gpiod_get_value_cansleep(info->id_gpiod) : 1;
 	vbus = info->vbus_gpiod ?
 		gpiod_get_value_cansleep(info->vbus_gpiod) : id;
-
+    
+	printk("[wenbin] usb_extcon_detect_cable id=%d/vbus=%d \n", id, vbus); 
+	
 	/* at first we clean states which are no longer active */
 	if (id)
 		extcon_set_state_sync(info->edev, EXTCON_USB_HOST, false);
-	if (!vbus)
+	if (vbus)
 		extcon_set_state_sync(info->edev, EXTCON_USB, false);
 
 	if (!id) {
 		extcon_set_state_sync(info->edev, EXTCON_USB_HOST, true);
 	} else {
-		if (vbus)
+		if (!vbus)
 			extcon_set_state_sync(info->edev, EXTCON_USB, true);
 	}
 }
@@ -116,7 +118,9 @@ static int usb_extcon_probe(struct platform_device *pdev)
 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
 	if (!info)
 		return -ENOMEM;
-
+	
+    printk("[wenbin] usb_extcon_probe \n"); 
+	
 	info->dev = dev;
 	info->id_gpiod = devm_gpiod_get_optional(&pdev->dev, "id", GPIOD_IN);
 	info->vbus_gpiod = devm_gpiod_get_optional(&pdev->dev, "vbus",
@@ -198,7 +202,7 @@ static int usb_extcon_probe(struct platform_device *pdev)
 
 	/* Perform initial detection */
 	usb_extcon_detect_cable(&info->wq_detcable.work);
-
+    printk("[wenbin] usb_extcon_probe done \n"); 
 	return 0;
 }
 

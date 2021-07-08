@@ -1110,7 +1110,7 @@ int disp_lcm_init(disp_lcm_handle *plcm)
 			return -1;
 		}
 
-#ifndef MACH_FPGA
+#if 0//ndef MACH_FPGA
 		if (LCM_TYPE_DSI == plcm->params->type) {
 			int ret = 0;
 			char buffer = 0;

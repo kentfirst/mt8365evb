@@ -204,7 +204,6 @@ void HDMI_reset(void)
 
 	struct device_node *dn;
 	int bus_switch_pin;
-	int ret;
 
 	IT66121_LOG("hdmi_ite66121 %s\n", __func__);
 
@@ -235,12 +234,6 @@ void HDMI_reset(void)
 	msleep(20);
 
 	gpio_direction_output(bus_switch_pin, 1);
-
-	if (hdmi_use_pmic_supply) {
-		ret = regulator_enable(hdmi_vsim1);
-		if (ret != 0)
-			IT66121_LOG("hdmi +5V regolator error\n");
-	}
 #endif
 	IT66121_LOG("<<HDMI_Reset\n");
 }
@@ -956,24 +949,32 @@ EXPORT_SYMBOL(HDMI_GetDriver);
 
 int ite66121_pmic_power_on(void)
 {
+	struct device_node *dn;
+	int hdmi_1v2_pin;
 	int ret;
 
 	pinctrl_select_state(hdmi_pinctrl, pins_hdmi_func);
 
 	if (hdmi_use_pmic_supply) {
-		ret = regulator_enable(hdmi_vrf12);
 		ret = regulator_enable(hdmi_vcn18);
 		ret = regulator_enable(hdmi_vcn33);
 		if (ret != 0)
 			IT66121_LOG("hdmi regolator error\n");
 	}
+	dn = of_find_compatible_node(NULL, NULL, "mediatek,mt8168-hdmitx");
+	if (dn == NULL)
+		IT66121_LOG("dn == NULL");
 
+	hdmi_1v2_pin = of_get_named_gpio(dn, "hdmi_1v2_gpios", 0);
+	gpio_direction_output(hdmi_1v2_pin, 1);
+	
 	IT66121_LOG("%s\n", __func__);
 	return 1;
 }
 int ite66121_pmic_power_off(void)
 {
 	struct device_node *dn;
+	int hdmi_1v2_pin;	
 	int bus_switch_pin;
 	int ret;
 
@@ -982,7 +983,6 @@ int ite66121_pmic_power_off(void)
 	if (hdmi_use_pmic_supply) {
 		ret = regulator_disable(hdmi_vcn33);
 		ret = regulator_disable(hdmi_vcn18);
-		ret = regulator_disable(hdmi_vrf12);
 
 		if (ret != 0)
 			IT66121_LOG("hdmi regolator error\n");
@@ -992,14 +992,13 @@ int ite66121_pmic_power_off(void)
 	dn = of_find_compatible_node(NULL, NULL, "mediatek,mt8168-hdmitx");
 	if (dn == NULL)
 		IT66121_LOG("dn == NULL");
+
+	hdmi_1v2_pin = of_get_named_gpio(dn, "hdmi_1v2_gpios", 0);
+	gpio_direction_output(hdmi_1v2_pin, 0);
+	
 	bus_switch_pin = of_get_named_gpio(dn, "hdmi_power_gpios", 0);
 	gpio_direction_output(bus_switch_pin, 0);
 
-	if (hdmi_use_pmic_supply) {
-		ret = regulator_disable(hdmi_vsim1);
-		if (ret != 0)
-			IT66121_LOG("hdmi regolator error\n");
-	}
 	IT66121_LOG("%s\n", __func__);
 	return 1;
 }
@@ -1262,17 +1261,11 @@ int hdmi_internal_probe(struct platform_device *pdev)
 		IT66121_LOG("hdmi use PMIC supply\n");
 		hdmi_vcn33 = devm_regulator_get(&pdev->dev, "vcn33");
 		hdmi_vcn18 = devm_regulator_get(&pdev->dev, "vcn18");
-		hdmi_vrf12 = devm_regulator_get(&pdev->dev, "vrf12");
-		hdmi_vsim1 = devm_regulator_get(&pdev->dev, "vsim1");
 
-		if (IS_ERR(hdmi_vsim1))
-			IT66121_LOG("hdmi hdmi_vsim1 error\n");
 		if (IS_ERR(hdmi_vcn33))
 			IT66121_LOG("hdmi hdmi_vcn33 error\n");
 		if (IS_ERR(hdmi_vcn18))
 			IT66121_LOG("hdmi hdmi_vcn18 error\n");
-		if (IS_ERR(hdmi_vrf12))
-			IT66121_LOG("hdmi hdmi_vrf12 error\n");
 	} else {
 		IT66121_LOG("hdmi do not use PMIC supply!!\n");
 	}

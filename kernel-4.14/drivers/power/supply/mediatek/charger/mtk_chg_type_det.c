@@ -207,7 +207,7 @@ static void usb_extcon_detect_cable(struct work_struct *work)
 	struct usb_extcon_info *info = container_of(to_delayed_work(work),
 						struct usb_extcon_info,
 						wq_detcable);
-
+pr_err("wenbin vbus %d\n", info->vbus_state);
 	/* check and update cable state */
 	if (info->vbus_state)
 		extcon_set_state_sync(info->edev, EXTCON_USB, true);
@@ -458,11 +458,11 @@ static void init_extcon_work(struct work_struct *work)
 		container_of(dw, struct mt_charger, extcon_work);
 	struct device_node *node = mt_chg->dev->of_node;
 	struct usb_extcon_info *info;
-
+	pr_err("%s: --\n", __func__);
 	info = mt_chg->extcon_info;
 	if (!info)
 		return;
-
+	pr_err("%s: --\n", __func__);
 	if (of_property_read_bool(node, "extcon")) {
 		info->edev = extcon_get_edev_by_phandle(mt_chg->dev, 0);
 		if (IS_ERR(info->edev)) {
@@ -471,7 +471,7 @@ static void init_extcon_work(struct work_struct *work)
 			return;
 		}
 	}
-
+	pr_err("%s: --\n", __func__);
 	INIT_DELAYED_WORK(&info->wq_detcable, usb_extcon_detect_cable);
 }
 #endif

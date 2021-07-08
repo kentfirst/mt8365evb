@@ -74,7 +74,7 @@ static void usb_extcon_detect_cable(struct work_struct *work)
 	/* check ID and VBUS and update cable state */
 	id = info->id_gpiod ?
 		gpiod_get_value_cansleep(info->id_gpiod) : 1;
-
+printk("wenbin id %d\n", id);
 	/* at first we clean states which are no longer active */
 	if (id)
 		extcon_set_state_sync(info->edev, EXTCON_USB_HOST, false);
@@ -101,33 +101,33 @@ static int usb_extcon_probe(struct platform_device *pdev)
 
 	if (!np)
 		return -EINVAL;
-
+dev_err(dev, "wenbin test1\n");
 	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
 	if (!info)
 		return -ENOMEM;
-
+dev_err(dev, "wenbin test2\n");
 	info->dev = dev;
 	info->id_gpiod = devm_gpiod_get(&pdev->dev, "id", GPIOD_IN);
 	if (!info->id_gpiod) {
 		dev_err(dev, "failed to get gpios\n");
 		return -ENODEV;
 	}
-
+dev_err(dev, "wenbin test3\n");
 	if (IS_ERR(info->id_gpiod))
 		return PTR_ERR(info->id_gpiod);
-
+dev_err(dev, "wenbin test4\n");
 	info->edev = devm_extcon_dev_allocate(dev, usb_extcon_cable);
 	if (IS_ERR(info->edev)) {
 		dev_err(dev, "failed to allocate extcon device\n");
 		return -ENOMEM;
 	}
-
+dev_err(dev, "wenbin test5\n");
 	ret = devm_extcon_dev_register(dev, info->edev);
 	if (ret < 0) {
 		dev_err(dev, "failed to register extcon device\n");
 		return ret;
 	}
-
+dev_err(dev, "wenbin test6\n");
 	ret = gpiod_set_debounce(info->id_gpiod,
 				 USB_GPIO_DEBOUNCE_MS * 1000);
 	if (ret < 0)
@@ -140,7 +140,7 @@ static int usb_extcon_probe(struct platform_device *pdev)
 		dev_err(dev, "failed to get ID IRQ\n");
 		return info->id_irq;
 	}
-
+dev_err(dev, "wenbin test8\n");
 	ret = devm_request_threaded_irq(dev, info->id_irq, NULL,
 					usb_irq_handler,
 					IRQF_TRIGGER_RISING |
@@ -151,7 +151,7 @@ static int usb_extcon_probe(struct platform_device *pdev)
 		dev_err(dev, "failed to request handler for ID IRQ\n");
 		return ret;
 	}
-
+dev_err(dev, "wenbin test10\n");
 	platform_set_drvdata(pdev, info);
 	device_set_wakeup_capable(&pdev->dev, true);
 

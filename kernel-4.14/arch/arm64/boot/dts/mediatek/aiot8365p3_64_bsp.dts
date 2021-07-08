@@ -24,10 +24,11 @@
 
 ROOT_NODE {
 	extcon_usb: extcon_iddig {
-		compatible = "linux,extcon-usb-chg";
-		id-gpio = <&pio 23 GPIO_ACTIVE_HIGH>;
+		compatible = "linux,extcon-usb-gpio";
+		id-gpio    = <&pio 17 GPIO_ACTIVE_HIGH>;
+		vbus-gpio  = <&pio 122 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&usbid_pins_default>;
+		pinctrl-0 = <&usb_pins_default>;
 	};
 
 	ite66121: ite66121 {
@@ -42,10 +43,9 @@ ROOT_NODE {
 
 	panel: panel@0 {
 		compatible = "jd,jd936x";
-		gpio_lcd_pwr = <&pio 68 0>;
 		gpio_lcd_rst = <&pio 20 0>;
-		gpio_lcd_stb = <&pio 21 0>;
 		reg-lcm-supply = <&mt_pmic_vsim1_ldo_reg>;
+		reg-lcm2-supply = <&mt_pmic_vldo28_ldo_reg>;
 	};
 
 	sound: sound {
@@ -79,7 +79,7 @@ ROOT_NODE {
 		pinctrl-11 = <&aud_pins_tdm_out>;
 		pinctrl-12 = <&aud_pins_tdm_in>;
 		ext-amp1-gpio = <&pio 22 0>;
-		ext-amp2-gpio = <&pio 22 0>;
+		ext-amp2-gpio = <&pio 25 0>;
 		status = "okay";
 	};
 
@@ -88,7 +88,7 @@ ROOT_NODE {
 		regulator-name = "vbus0";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpio = <&pio 28 GPIO_ACTIVE_HIGH>;
+		gpio = <&pio 16 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
 
@@ -97,25 +97,10 @@ ROOT_NODE {
 		regulator-name = "vbus1";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
-		gpio = <&pio 134 GPIO_ACTIVE_HIGH>;
+		gpio = <&pio 18 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-always-on;
 	};
-};
-
-&accdet {
-	accdet-mic-vol = <6>;
-	headset-mode-setting = <0x500 0x500 1 0x1f0 0x800 0x800 0x20 0x44>;
-	accdet-plugout-debounce = <1>;
-	accdet-mic-mode = <1>;
-	headset-eint-level-pol = <4>;
-	headset-three-key-threshold = <0 80 220 400>;
-	headset-three-key-threshold-CDD = <0 121 192 600>;
-	headset-four-key-threshold = <0 58 121 192 400>;
-	pinctrl-names = "default", "state_eint_as_int";
-	pinctrl-0 = <&accdet_pins_default>;
-	pinctrl-1 = <&accdet_pins_eint_as_int>;
-	status = "okay";
 };
 
 &afe {
@@ -158,12 +143,6 @@ ROOT_NODE {
 
 &cpu3 {
 	clock-frequency = <10000000>;
-};
-
-&ethernet {
-	status = "okay";
-	pinctrl-names = "default";
-	pinctrl-0 = <&ethernet_pins_default>;
 };
 
 &i2c0 {
@@ -368,8 +347,10 @@ ROOT_NODE {
 	pinctrl-names = "hdmi_poweron", "hdmi_poweroff";
 	pinctrl-0 = <&hdmi_pins_funcmode>;
 	pinctrl-1 = <&hdmi_pins_gpiomode>;
-	hdmi_power_gpios = <&pio 79 0>;
-	not_use_pmic_supply;
+	vcn33-supply = <&mt_pmic_vibr_ldo_reg>;
+	vcn18-supply = <&mt_pmic_vsim2_ldo_reg>;
+	hdmi_1v2_gpios = <&pio 71 0>;
+	hdmi_power_gpios = <&pio 70 0>;
 	status = "okay";
 };
 
@@ -501,17 +482,6 @@ ROOT_NODE {
 
 &pio {
 	pinctrl-names = "default";
-
-	accdet_pins_default: accdetdefault {
-	};
-
-	accdet_pins_eint_as_int: accdeteint@0 {
-		pins_cmd_dat {
-			pinmux = <MT8168_PIN_70_CMDAT2__FUNC_GPIO70>;
-			slew-rate = <0>;
-			bias-disable;
-		};
-	};
 
 	alsps_intpin_cfg: alspspincfg {
 		pins_cmd_dat {
@@ -768,27 +738,6 @@ ROOT_NODE {
 		};
 	};
 
-	ethernet_pins_default: ethernet {
-		pins_ethernet {
-			pinmux = <MT8168_PIN_0_GPIO0__FUNC_EXT_TXD0>,
-				 <MT8168_PIN_1_GPIO1__FUNC_EXT_TXD1>,
-				 <MT8168_PIN_2_GPIO2__FUNC_EXT_TXD2>,
-				 <MT8168_PIN_3_GPIO3__FUNC_EXT_TXD3>,
-				 <MT8168_PIN_4_GPIO4__FUNC_EXT_TXC>,
-				 <MT8168_PIN_5_GPIO5__FUNC_EXT_RXER>,
-				 <MT8168_PIN_6_GPIO6__FUNC_EXT_RXC>,
-				 <MT8168_PIN_7_GPIO7__FUNC_EXT_RXDV>,
-				 <MT8168_PIN_8_GPIO8__FUNC_EXT_RXD0>,
-				 <MT8168_PIN_9_GPIO9__FUNC_EXT_RXD1>,
-				 <MT8168_PIN_10_GPIO10__FUNC_EXT_RXD2>,
-				 <MT8168_PIN_11_GPIO11__FUNC_EXT_RXD3>,
-				 <MT8168_PIN_12_GPIO12__FUNC_EXT_TXEN>,
-				 <MT8168_PIN_13_GPIO13__FUNC_EXT_COL>,
-				 <MT8168_PIN_14_GPIO14__FUNC_EXT_MDIO>,
-				 <MT8168_PIN_15_GPIO15__FUNC_EXT_MDC>;
-		};
-	};
-
 	gpslna_pins_init: gpslna@0 {
 		pins_cmd_dat {
 			pinmux = <MT8168_PIN_69_CMDAT1__FUNC_GPIO69>;
@@ -831,27 +780,7 @@ ROOT_NODE {
 				 <MT8168_PIN_12_GPIO12__FUNC_DPI_DE>,
 				 <MT8168_PIN_13_GPIO13__FUNC_DPI_VSYNC>,
 				 <MT8168_PIN_14_GPIO14__FUNC_DPI_CK>,
-				 <MT8168_PIN_15_GPIO15__FUNC_DPI_HSYNC>,
-				 <MT8168_PIN_16_GPIO16__FUNC_DPI_D12>,
-				 <MT8168_PIN_17_GPIO17__FUNC_DPI_D13>,
-				 <MT8168_PIN_18_GPIO18__FUNC_DPI_D14>,
-				 <MT8168_PIN_110_PCM_CLK__FUNC_DPI_D15>,
-				 <MT8168_PIN_111_PCM_SYNC__FUNC_DPI_D16>,
-				 <MT8168_PIN_112_PCM_RX__FUNC_DPI_D17>,
-				 <MT8168_PIN_113_PCM_TX__FUNC_DPI_D18>,
-				 <MT8168_PIN_80_MSDC2_CMD__FUNC_DPI_D19>,
-				 <MT8168_PIN_81_MSDC2_CLK__FUNC_DPI_D20>,
-				 <MT8168_PIN_82_MSDC2_DAT0__FUNC_DPI_D21>,
-				 <MT8168_PIN_83_MSDC2_DAT1__FUNC_DPI_D22>,
-				 <MT8168_PIN_84_MSDC2_DAT2__FUNC_DPI_D23>,
-				 <MT8168_PIN_114_I2S_DATA_IN__FUNC_I2S3_DO>,
-				 <MT8168_PIN_115_I2S_LRCK__FUNC_I2S3_LRCK>,
-				 <MT8168_PIN_116_I2S_BCK__FUNC_I2S3_BCK>;
-		};
-		hdmi_5v_pin_on {
-			pinmux = <MT8168_PIN_27_SPI_CK__FUNC_GPIO27>;
-			slew-rate = <1>;
-			output-high;
+				 <MT8168_PIN_15_GPIO15__FUNC_DPI_HSYNC>;
 		};
 	};
 
@@ -872,26 +801,9 @@ ROOT_NODE {
 				 <MT8168_PIN_12_GPIO12__FUNC_GPIO12>,
 				 <MT8168_PIN_13_GPIO13__FUNC_GPIO13>,
 				 <MT8168_PIN_14_GPIO14__FUNC_GPIO14>,
-				 <MT8168_PIN_15_GPIO15__FUNC_GPIO15>,
-				 <MT8168_PIN_16_GPIO16__FUNC_GPIO16>,
-				 <MT8168_PIN_17_GPIO17__FUNC_GPIO17>,
-				 <MT8168_PIN_18_GPIO18__FUNC_GPIO18>,
-				 <MT8168_PIN_110_PCM_CLK__FUNC_GPIO110>,
-				 <MT8168_PIN_111_PCM_SYNC__FUNC_GPIO111>,
-				 <MT8168_PIN_112_PCM_RX__FUNC_GPIO112>,
-				 <MT8168_PIN_113_PCM_TX__FUNC_GPIO113>,
-				 <MT8168_PIN_80_MSDC2_CMD__FUNC_GPIO80>,
-				 <MT8168_PIN_81_MSDC2_CLK__FUNC_GPIO81>,
-				 <MT8168_PIN_82_MSDC2_DAT0__FUNC_GPIO82>,
-				 <MT8168_PIN_83_MSDC2_DAT1__FUNC_GPIO83>,
-				 <MT8168_PIN_84_MSDC2_DAT2__FUNC_GPIO84>,
-				 <MT8168_PIN_114_I2S_DATA_IN__FUNC_GPIO114>,
-				 <MT8168_PIN_115_I2S_LRCK__FUNC_GPIO115>,
-				 <MT8168_PIN_116_I2S_BCK__FUNC_GPIO116>;
-		};
-		hdmi_5v_pin_off {
-			pinmux = <MT8168_PIN_27_SPI_CK__FUNC_GPIO27>;
-			slew-rate = <0>;
+				 <MT8168_PIN_15_GPIO15__FUNC_GPIO15>;
+			input-disable;
+			bias-disable;
 		};
 	};
 
@@ -1067,13 +979,17 @@ ROOT_NODE {
 		};
 	};
 
-	usbid_pins_default: usbid_pins_default {
-		pins_cmd1_dat {
-			pinmux = <MT8168_PIN_23_KPROW1__FUNC_GPIO23>;
+	usb_pins_default: usb_default {
+		pins_iddig {
+			pinmux = <MT8168_PIN_17_GPIO17__FUNC_GPIO17>;
 			input-enable;
-			slew-rate = <0>;
-			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+			bias-pull-up;
 		};
+		pins_vbusdet {
+			pinmux = <MT8168_PIN_122_DMIC1_DAT1__FUNC_GPIO122>;
+			input-enable;
+			bias-disable;
+		};		
 	};
 };
 

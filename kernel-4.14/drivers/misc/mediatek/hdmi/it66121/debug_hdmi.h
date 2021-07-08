@@ -82,15 +82,15 @@
 #define IT66121_LOG(fmt, arg...)                                               \
 	do {                                                                   \
 		if (IT66121_LOG_on) {                                          \
-			pr_debug("[hdmi_it66121]%s,%d ", __func__, __LINE__);  \
-			pr_debug(fmt, ##arg);                                  \
+			pr_err("[hdmi_it66121]%s,%d ", __func__, __LINE__);  \
+			pr_err(fmt, ##arg);                                  \
 		}                                                              \
 	} while (0)
 
 #define it66121_FUNC()                                                         \
 	do {                                                                   \
 		if (IT66121_LOG_on) {                                          \
-			pr_debug("[hdmi_it66121] %s\n", __func__);             \
+			pr_err("[hdmi_it66121] %s\n", __func__);             \
 		}                                                              \
 	} while (0)
 

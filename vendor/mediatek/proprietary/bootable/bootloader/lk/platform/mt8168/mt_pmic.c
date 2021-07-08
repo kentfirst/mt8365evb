@@ -577,3 +577,10 @@ void pmic_vsim1_enable(bool en, int vol_mv)
 		pmic_set_register_value(PMIC_RG_LDO_VSIM1_EN, 1);
 	}
 }
+
+void pmic_vldo28_enable(bool en)
+{
+	pmic_set_register_value(PMIC_RG_LDO_VLDO28_SW_OP_EN, 1);
+	pmic_set_register_value(PMIC_RG_LDO_VLDO28_EN_1, 1);
+	pmic_set_register_value(PMIC_RG_VLDO28_VOSEL, 0x1);
+}

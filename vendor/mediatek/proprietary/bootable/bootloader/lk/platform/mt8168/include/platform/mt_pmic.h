@@ -108,7 +108,7 @@ extern bool get_powerkey_pressed_status(void);
 extern void clear_powerkey_pressed_status(void);
 extern void mt_power_off(void);
 extern void pmic_vsim1_enable(bool en, int vol_mv);
-
+extern void pmic_vldo28_enable(bool en);
 //==============================================================================
 // PMIC Status Code
 //==============================================================================
