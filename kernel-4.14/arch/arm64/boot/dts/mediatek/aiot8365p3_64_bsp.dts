@@ -190,9 +190,9 @@ ROOT_NODE {
 		compatible = "mediatek,cap_touch";
 		reg = <0x5d>;
 		interrupt-parent = <&pio>;
-		interrupts = <126 IRQ_TYPE_EDGE_RISING>;
-		int-gpio = <&pio 126 0>;
-		rst-gpio = <&pio 127 0>;
+		interrupts = <78 IRQ_TYPE_EDGE_FALLING>;//126-RISING
+		int-gpio = <&pio 78 0>;//126
+		rst-gpio = <&pio 79 0>;//127
 		status = "okay";
 	};
 
@@ -681,7 +681,7 @@ ROOT_NODE {
 
 	CTP_pins_default: eint0default {
 		pins_cmd_dat {
-			pinmux = <MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
+			pinmux = <MT8168_PIN_78_CMHSYNC__FUNC_GPIO78>;//<MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
 			slew-rate = <0>;
 			bias-disable;
 		};
@@ -689,7 +689,7 @@ ROOT_NODE {
 
 	CTP_pins_eint_as_int: eint@0 {
 		pins_cmd_dat {
-			pinmux = <MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
+			pinmux = <MT8168_PIN_78_CMHSYNC__FUNC_GPIO78>;//<MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
 			slew-rate = <0>;
 			bias-disable;
 		};
@@ -697,7 +697,7 @@ ROOT_NODE {
 
 	CTP_pins_eint_output0: eintoutput0 {
 		pins_cmd_dat {
-			pinmux = <MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
+			pinmux = <MT8168_PIN_78_CMHSYNC__FUNC_GPIO78>;//<MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
 			slew-rate = <1>;
 			output-low;
 		};
@@ -705,7 +705,7 @@ ROOT_NODE {
 
 	CTP_pins_eint_output1: eintoutput1 {
 		pins_cmd_dat {
-			pinmux = <MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
+			pinmux = <MT8168_PIN_78_CMHSYNC__FUNC_GPIO78>;//<MT8168_PIN_126_DMIC3_CLK__FUNC_GPIO126>;
 			slew-rate = <1>;
 			output-high;
 		};
@@ -713,7 +713,7 @@ ROOT_NODE {
 
 	CTP_pins_rst_output0: rstoutput0 {
 		pins_cmd_dat {
-			pinmux = <MT8168_PIN_127_DMIC3_DAT0__FUNC_GPIO127>;
+			pinmux = <MT8168_PIN_79_CMVSYNC__FUNC_GPIO79>;//<MT8168_PIN_127_DMIC3_DAT0__FUNC_GPIO127>;
 			slew-rate = <1>;
 			output-low;
 		};
@@ -721,7 +721,7 @@ ROOT_NODE {
 
 	CTP_pins_rst_output1: rstoutput1 {
 		pins_cmd_dat {
-			pinmux = <MT8168_PIN_127_DMIC3_DAT0__FUNC_GPIO127>;
+			pinmux = <MT8168_PIN_79_CMVSYNC__FUNC_GPIO79>;//<MT8168_PIN_127_DMIC3_DAT0__FUNC_GPIO127>;
 			slew-rate = <1>;
 			output-high;
 		};
